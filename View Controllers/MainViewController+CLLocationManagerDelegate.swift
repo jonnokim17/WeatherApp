@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import CoreLocation
+import MapKit
 
 extension MainViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {

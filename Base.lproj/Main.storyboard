@@ -22,8 +22,8 @@
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="hY2-lo-ncA">
                                 <rect key="frame" x="0.0" y="164" width="375" height="503"/>
                             </mapView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Los Angeles" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jES-eX-ZVn">
-                                <rect key="frame" x="16" y="75" width="94" height="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="City, Country" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jES-eX-ZVn">
+                                <rect key="frame" x="16" y="75" width="100" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
@@ -76,7 +76,7 @@
                         <outlet property="temperatureLabel" destination="wOc-c1-Fye" id="DpY-Al-Kge"/>
                         <outlet property="weatherDescriptionLabel" destination="yJU-RK-aY6" id="u3r-2d-Ccw"/>
                         <outlet property="weatherIconImageView" destination="igB-gW-32m" id="dPF-FF-BLS"/>
-                        <segue destination="S2d-D5-yGn" kind="show" id="daO-ed-Lff"/>
+                        <segue destination="S2d-D5-yGn" kind="show" identifier="detailSegue" id="daO-ed-Lff"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

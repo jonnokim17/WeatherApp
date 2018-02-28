@@ -10,7 +10,7 @@ import UIKit
 import MapKit
 import CoreLocation
 
-class MainViewController: UIViewController, CLLocationManagerDelegate, UIGestureRecognizerDelegate {
+class MainViewController: UIViewController {
     
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var cityLabel: UILabel!
@@ -23,38 +23,7 @@ class MainViewController: UIViewController, CLLocationManagerDelegate, UIGesture
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if Reachability.isConnectedToNetwork() {
-            print("Internet Connection Available!")
-        } else {
-            print("Internet Connection not Available!")
-            guard let offlineDict = UserDefaults.standard.object(forKey: "offlineData") as? [String: Any] else { return }
-
-            guard
-                let lat = offlineDict["latitude"] as? Double,
-                let long = offlineDict["longitude"] as? Double,
-                let currentTemp = offlineDict["currentTemperature"] as? Double,
-                let tempSummary = offlineDict["currentSummary"] as? String,
-                let weatherIcon = offlineDict["weatherIcon"] as? String,
-                let cityName = offlineDict["city"] as? String,
-                let countryName = offlineDict["country"] as? String
-            else { return }
-
-            self.cityLabel.text = "\(cityName), \(countryName)"
-            self.temperatureLabel.text = "\(Int(currentTemp)) °F"
-            self.weatherDescriptionLabel.text = tempSummary
-            self.weatherIconImageView.image = UIImage(named: weatherIcon)
-
-            let span = MKCoordinateSpanMake(10, 10)
-            let myLocation = CLLocationCoordinate2DMake(lat, long)
-            let region = MKCoordinateRegionMake(myLocation, span)
-            mapView.setRegion(region, animated: true)
-            mapView.showsUserLocation = true
-
-            let annotation = MKPointAnnotation()
-            annotation.coordinate = CLLocationCoordinate2D(latitude: lat, longitude: long)
-            mapView.addAnnotation(annotation)
-        }
-
+        handleOfflineMode()
         setupUI()
 
         manager.delegate = self
@@ -73,42 +42,38 @@ class MainViewController: UIViewController, CLLocationManagerDelegate, UIGesture
         UINavigationBar.appearance().prefersLargeTitles = true
     }
 
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard Reachability.isConnectedToNetwork() else { return }
-        guard let location = locations.first else { return }
-        let span = MKCoordinateSpanMake(10, 10)
-        let latitude = location.coordinate.latitude
-        let longitude = location.coordinate.longitude
-        let myLocation = CLLocationCoordinate2DMake(latitude, longitude)
-        let region = MKCoordinateRegionMake(myLocation, span)
-        mapView.setRegion(region, animated: true)
-        mapView.showsUserLocation = true
-
-        Weather.forecast(withLocation: myLocation) { (results: [Weather]?) in
-            guard let weatherData = results else { return }
-
-            guard let currentWeatherData = weatherData.first else { return }
-            DispatchQueue.main.async {
-                self.temperatureLabel.text = "\(Int(currentWeatherData.temperature)) °F"
-                self.weatherDescriptionLabel.text = currentWeatherData.summary
-                self.weatherIconImageView.image = UIImage(named: currentWeatherData.icon)
-            }
-        }
-
-        let geoCoder = CLGeocoder()
-        geoCoder.reverseGeocodeLocation(location, completionHandler: { placemarks, error in
-            guard let firstPlacemark = placemarks?.first else {
-                self.cityLabel.text = "Unknown"
-                return
-            }
+    private func handleOfflineMode() {
+        if Reachability.isConnectedToNetwork() {
+            print("Internet Connection Available!")
+        } else {
+            print("Internet Connection not Available!")
+            guard let offlineDict = UserDefaults.standard.object(forKey: "offlineData") as? [String: Any] else { return }
 
             guard
-                let cityName = firstPlacemark.locality,
-                let countryName = firstPlacemark.country
-            else { return }
+                let lat = offlineDict["latitude"] as? Double,
+                let long = offlineDict["longitude"] as? Double,
+                let currentTemp = offlineDict["currentTemperature"] as? Double,
+                let tempSummary = offlineDict["currentSummary"] as? String,
+                let weatherIcon = offlineDict["weatherIcon"] as? String,
+                let cityName = offlineDict["city"] as? String,
+                let countryName = offlineDict["country"] as? String
+                else { return }
 
             self.cityLabel.text = "\(cityName), \(countryName)"
-        })
+            self.temperatureLabel.text = "\(Int(currentTemp)) °F"
+            self.weatherDescriptionLabel.text = tempSummary
+            self.weatherIconImageView.image = UIImage(named: weatherIcon)
+
+            let span = MKCoordinateSpanMake(10, 10)
+            let myLocation = CLLocationCoordinate2DMake(lat, long)
+            let region = MKCoordinateRegionMake(myLocation, span)
+            mapView.setRegion(region, animated: true)
+            mapView.showsUserLocation = true
+
+            let annotation = MKPointAnnotation()
+            annotation.coordinate = CLLocationCoordinate2D(latitude: lat, longitude: long)
+            mapView.addAnnotation(annotation)
+        }
     }
 
     @objc func handleDoubleTap(_ gestureReconizer: UITapGestureRecognizer) {
@@ -125,7 +90,9 @@ class MainViewController: UIViewController, CLLocationManagerDelegate, UIGesture
             self.present(navController, animated: true)
         }
     }
+}
 
+extension MainViewController: UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }

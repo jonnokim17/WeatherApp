@@ -9,7 +9,7 @@
 import UIKit
 import CoreLocation
 
-class DetailViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class DetailViewController: UIViewController {
     
     @IBOutlet weak var tableView: UITableView!
 
@@ -44,24 +44,11 @@ class DetailViewController: UIViewController, UITableViewDelegate, UITableViewDa
         dismiss(animated: true) {
             guard let coordinate = self.coordinate else { return }
             guard let currentForecast = self.forecastData.first else { return }
+
+            // saving light-weight data using UserDefaults
             UserDefaults.standard.removeObject(forKey: "offlineData")
             UserDefaults.standard.set(["latitude": coordinate.latitude, "longitude": coordinate.longitude, "currentTemperature": currentForecast.temperature, "currentSummary": currentForecast.summary, "weatherIcon": currentForecast.icon, "city": self.cityName, "country": self.countryName], forKey: "offlineData")
             UserDefaults.standard.synchronize()
         }
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "weatherCell", for: indexPath)
-        let weatherObject = forecastData[indexPath.row]
-
-        cell.textLabel?.text = weatherObject.summary
-        cell.detailTextLabel?.text = "\(Int(weatherObject.temperature)) °F"
-        cell.imageView?.image = UIImage(named: weatherObject.icon)
-
-        return cell
-    }
-
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return forecastData.count
     }
 }
